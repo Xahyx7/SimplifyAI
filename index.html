@@ -17,46 +17,30 @@
 <!-- MAIN -->
 <div id="mainUI">
 
-  <div class="bg-glow"></div>
-
   <div class="app">
 
     <!-- SIDEBAR -->
     <aside class="sidebar">
       <h2>SimplifyAI</h2>
-      <p>AI Study Assistant</p>
+      <p>AI Tutor</p>
     </aside>
 
-    <!-- MAIN CONTENT -->
-  <main class="main">
+    <!-- CHAT AREA -->
+    <main class="chat">
 
-  <!-- Upload Card -->
-  <div class="card" id="card">
-    <h3>Upload your doubt</h3>
+      <div id="chatContainer"></div>
 
-    <input type="file" id="imageInput" />
+      <div class="chat-bar">
+        <input type="file" id="imageInput">
+        <input type="text" id="promptInput" placeholder="Ask anything...">
+        <button onclick="sendMessage()">Send</button>
+      </div>
 
-    <!-- ❌ REMOVE BUTTON HERE -->
-  </div>
+    </main>
 
-  <!-- ✅ MAIN SOLVE BAR -->
-  <div class="chat-bar">
-    <input 
-      type="text" 
-      id="promptInput" 
-      placeholder="Explain what you want... (e.g. only steps, hint, easy explanation)"
-    />
-    <button onclick="solve()">Solve</button>
-  </div>
-
-</main>
-    <!-- OUTPUT PANEL -->
-    <aside class="panel">
-
-      <div class="glass" id="answer">🧠 Waiting for answer...</div>
-      <div class="glass">📌 Concept will appear</div>
-      <div class="glass" id="videos">🎥 Videos will appear</div>
-
+    <!-- VIDEO PANEL -->
+    <aside class="panel" id="videoPanel">
+      <h3>🎥 Videos</h3>
     </aside>
 
   </div>
