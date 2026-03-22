@@ -265,13 +265,16 @@ async function login() {
 
   if (data.success) {
     localStorage.setItem("user", username);
+
+    // ✅ SHOW APP
     document.getElementById("auth").style.display = "none";
+    document.getElementById("mainUI").style.display = "block";
+
     loadHistory();
   } else {
     alert("Invalid login");
   }
 }
-
 // =========================
 // NEW CHAT
 // =========================
