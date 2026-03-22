@@ -4,6 +4,10 @@ export default async function handler(req, res) {
   try {
     const { username, password, type } = req.body;
 
+    if (!username || !password) {
+      return res.status(400).json({ error: "Missing fields" });
+    }
+
     const client = await clientPromise;
     const db = client.db("simplifyai");
     const users = db.collection("users");
@@ -12,7 +16,7 @@ export default async function handler(req, res) {
       const exists = await users.findOne({ username });
 
       if (exists) {
-        return res.json({ error: "User exists" });
+        return res.json({ error: "User already exists" });
       }
 
       await users.insertOne({
@@ -34,8 +38,10 @@ export default async function handler(req, res) {
       return res.json({ success: true });
     }
 
+    return res.status(400).json({ error: "Invalid request type" });
+
   } catch (err) {
-    console.error(err);
-    return res.status(500).json({ error: "Server error" });
+    console.error("AUTH ERROR:", err);
+    return res.status(500).json({ error: err.message });
   }
 }
