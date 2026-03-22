@@ -34,22 +34,27 @@
       <!-- 🔥 PREMIUM CHAT BAR -->
       <div class="chat-bar">
 
-        <!-- Custom Upload Button -->
-        <label for="imageInput" class="file-btn">📷 Upload</label>
-        <input type="file" id="imageInput">
+  <!-- Upload -->
+  <label for="imageInput" class="file-btn">📷</label>
+  <input type="file" id="imageInput">
 
-        <!-- Text Input -->
-        <input 
-          type="text" 
-          id="promptInput" 
-          placeholder="Ask anything... (e.g. solve, check, explain, hint)"
-        >
+  <!-- Image Preview -->
+  <img id="preview" class="preview" />
 
-        <!-- Send Button -->
-        <button onclick="sendMessage()">Solve</button>
+  <!-- Input -->
+  <input 
+    type="text" 
+    id="promptInput" 
+    placeholder="Ask anything..."
+  >
 
-      </div>
+  <!-- Voice -->
+  <button onclick="startVoice()">🎙️</button>
 
+  <!-- Send -->
+  <button onclick="sendMessage()">Solve</button>
+
+</div>
     </main>
 
     <!-- VIDEO PANEL -->
