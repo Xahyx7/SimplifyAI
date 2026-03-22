@@ -7,36 +7,45 @@
 </head>
 <body>
 
-  <!-- 🎬 INTRO -->
+  <!-- INTRO -->
   <div id="intro">
     <video id="introVideo" autoplay muted playsinline>
       <source src="/assets/intro.mp4" type="video/mp4">
     </video>
   </div>
 
-  <!-- 🌐 MAIN UI -->
+  <!-- MAIN UI -->
   <div id="mainUI">
 
-    <!-- Background glow -->
     <div class="bg-glow"></div>
 
-    <!-- Main glass card -->
-    <div class="card" id="card">
-      <h1>SimplifyAI</h1>
-      <p>Upload your doubt and get instant explanation</p>
+    <div class="layout">
 
-      <input type="file" class="input" />
-      <button class="btn">Solve</button>
-    </div>
+      <!-- SIDEBAR -->
+      <div class="sidebar">
+        <h2>SimplifyAI</h2>
+        <p>AI Study Assistant</p>
+      </div>
 
-    <!-- Output section -->
-    <div class="output">
+      <!-- CENTER -->
+      <div class="center">
+        <div class="card" id="card">
+          <h3>Upload your doubt</h3>
+          <input type="file" class="input" />
+          <button class="btn">Solve</button>
+        </div>
+      </div>
 
-      <div class="glass answer">🧠 Answer will appear here</div>
+      <!-- RIGHT PANEL -->
+      <div class="right">
 
-      <div class="glass concept">📌 Concept will appear here</div>
+        <div class="glass">🧠 Answer will appear here</div>
 
-      <div class="glass videos">🎥 Videos will appear here</div>
+        <div class="glass">📌 Concept breakdown</div>
+
+        <div class="glass">🎥 Related videos</div>
+
+      </div>
 
     </div>
 
