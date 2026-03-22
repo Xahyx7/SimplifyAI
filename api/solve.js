@@ -31,9 +31,25 @@ if (!image && (!prompt || prompt.trim() === "")) {
   {
     parts: [
       {
-        text: image
-          ? `Solve the question from the image. User request: ${userInstruction}`
-          : `Answer this question clearly for a student: ${userInstruction}`
+       text: image
+  ? `You are a helpful study assistant.
+
+A student has uploaded an image of a question or their solution.
+
+First understand what the student is asking:
+- If they want a solution → solve step by step
+- If they want verification → check their answer and tell if correct
+- If they want mistake analysis → find errors and explain
+- If they want hint → give hint only
+- If they want simple explanation → explain clearly
+
+User request: ${userInstruction}
+
+Respond accordingly in a clear and helpful way.`
+  : `You are a helpful study assistant.
+
+Answer this question clearly for a student:
+${userInstruction}`
       },
       ...(image
         ? [
