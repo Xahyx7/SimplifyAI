@@ -1,24 +1,25 @@
 // =========================
-// INTRO LOADER
+// INTRO LOADER (FIXED)
 // =========================
 window.onload = () => {
   const video = document.getElementById("introVideo");
   const intro = document.getElementById("intro");
   const auth = document.getElementById("auth");
 
-  video.onended = () => {
+  function showAuth() {
     intro.style.opacity = "0";
 
     setTimeout(() => {
       intro.style.display = "none";
-
-      // ✅ SHOW LOGIN AFTER INTRO
       auth.style.display = "flex";
     }, 800);
-  };
-};
+  }
 
-  loadHistory();
+  // When video ends
+  video.onended = showAuth;
+
+  // Fallback (if video fails)
+  setTimeout(showAuth, 5000);
 };
 
 // =========================
@@ -77,7 +78,7 @@ async function process(image, prompt) {
   replaceLastMessage(data.answer);
   showVideos(data.videos);
 
-  // 📚 SAVE HISTORY
+  // SAVE HISTORY
   await fetch("/api/history", {
     method: "POST",
     headers: {"Content-Type":"application/json"},
@@ -270,7 +271,6 @@ async function login() {
   if (data.success) {
     localStorage.setItem("user", username);
 
-    // ✅ SHOW APP
     document.getElementById("auth").style.display = "none";
     document.getElementById("mainUI").style.display = "block";
 
@@ -279,6 +279,7 @@ async function login() {
     alert("Invalid login");
   }
 }
+
 // =========================
 // NEW CHAT
 // =========================
