@@ -13,6 +13,7 @@ body {
   height: 100%;
   background: #0B0F1A;
   z-index: 9999;
+  transition: opacity 1s ease;
 }
 
 #intro video {
@@ -24,7 +25,7 @@ body {
 /* MAIN UI */
 #mainUI {
   opacity: 0;
-  transition: opacity 1s ease;
+  transition: opacity 1.2s ease;
   padding: 40px;
 }
 
@@ -50,11 +51,11 @@ body {
   border-radius: 20px;
 
   background: rgba(255,255,255,0.05);
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(14px);
   border: 1px solid rgba(255,255,255,0.1);
 
   opacity: 0;
-  transform: scale(0.9);
+  transform: scale(0.85) translateY(20px);
 }
 
 /* INPUT */
@@ -78,7 +79,7 @@ body {
 }
 
 .btn:hover {
-  box-shadow: 0 0 20px #7C3AED;
+  box-shadow: 0 0 25px #7C3AED;
 }
 
 /* OUTPUT */
@@ -96,9 +97,9 @@ body {
   border-radius: 15px;
 
   background: rgba(255,255,255,0.05);
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(14px);
   border: 1px solid rgba(255,255,255,0.1);
 
   opacity: 0;
-  transform: translateY(20px);
+  transform: scale(0.9) translateY(30px);
 }
