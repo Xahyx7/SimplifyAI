@@ -22,77 +22,80 @@ body {
   object-fit: cover;
 }
 
-/* MAIN UI */
+/* MAIN */
 #mainUI {
   opacity: 0;
   transition: opacity 1.2s ease;
-  padding: 40px;
 }
 
-/* BACKGROUND GLOW */
+/* GLOW */
 .bg-glow {
   position: fixed;
-  width: 500px;
-  height: 500px;
+  width: 600px;
+  height: 600px;
   background: radial-gradient(circle, #7C3AED, transparent);
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  filter: blur(120px);
+  filter: blur(140px);
   z-index: -1;
 }
 
-/* GLASS CARD */
+/* LAYOUT */
+.layout {
+  display: flex;
+  height: 100vh;
+}
+
+/* SIDEBAR */
+.sidebar {
+  width: 220px;
+  padding: 20px;
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(12px);
+  border-right: 1px solid rgba(255,255,255,0.1);
+
+  opacity: 0;
+  transform: translateX(-30px);
+}
+
+/* CENTER */
+.center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* CARD */
 .card {
   width: 350px;
-  margin: auto;
   padding: 30px;
-  text-align: center;
   border-radius: 20px;
+  text-align: center;
 
   background: rgba(255,255,255,0.05);
   backdrop-filter: blur(14px);
   border: 1px solid rgba(255,255,255,0.1);
 
   opacity: 0;
-  transform: scale(0.85) translateY(20px);
+  transform: scale(0.85);
 }
 
-/* INPUT */
-.input {
-  margin-top: 15px;
-  width: 100%;
-}
-
-/* BUTTON */
-.btn {
-  margin-top: 15px;
-  padding: 10px 20px;
-  border-radius: 10px;
-  border: none;
-  cursor: pointer;
-
-  background: linear-gradient(135deg, #7C3AED, #22D3EE);
-  color: white;
-
-  transition: 0.3s;
-}
-
-.btn:hover {
-  box-shadow: 0 0 25px #7C3AED;
-}
-
-/* OUTPUT */
-.output {
-  margin-top: 40px;
+/* RIGHT PANEL */
+.right {
+  width: 300px;
+  padding: 20px;
   display: flex;
+  flex-direction: column;
   gap: 20px;
-  justify-content: center;
+
+  opacity: 0;
+  transform: translateX(30px);
 }
 
-/* GLASS BOXES */
+/* GLASS */
 .glass {
-  width: 250px;
   padding: 20px;
   border-radius: 15px;
 
@@ -101,5 +104,27 @@ body {
   border: 1px solid rgba(255,255,255,0.1);
 
   opacity: 0;
-  transform: scale(0.9) translateY(30px);
+  transform: scale(0.9) translateY(20px);
+}
+
+/* INPUT */
+.input {
+  margin-top: 10px;
+  width: 100%;
+}
+
+/* BUTTON */
+.btn {
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+
+  background: linear-gradient(135deg, #7C3AED, #22D3EE);
+  color: white;
+}
+
+.btn:hover {
+  box-shadow: 0 0 20px #7C3AED;
 }
