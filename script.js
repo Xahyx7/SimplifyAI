@@ -4,15 +4,19 @@
 window.onload = () => {
   const video = document.getElementById("introVideo");
   const intro = document.getElementById("intro");
-  const mainUI = document.getElementById("mainUI");
+  const auth = document.getElementById("auth");
 
   video.onended = () => {
     intro.style.opacity = "0";
+
     setTimeout(() => {
       intro.style.display = "none";
-      mainUI.style.opacity = "1";
+
+      // ✅ SHOW LOGIN AFTER INTRO
+      auth.style.display = "flex";
     }, 800);
   };
+};
 
   loadHistory();
 };
