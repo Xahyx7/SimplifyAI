@@ -35,3 +35,51 @@ window.addEventListener("load", () => {
     }, 800);
   }
 });
+async function solve() {
+  const file = document.getElementById("imageInput").files[0];
+  const prompt = document.getElementById("promptInput").value;
+
+  if (!file) {
+    alert("Upload an image first!");
+    return;
+  }
+
+  const reader = new FileReader();
+
+  reader.onload = async function () {
+    const base64 = reader.result.split(",")[1];
+
+    document.getElementById("answer").innerText = "Thinking...";
+    document.getElementById("videos").innerHTML = "Loading videos...";
+
+    const res = await fetch("/api/solve", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ 
+        image: base64,
+        prompt: prompt
+      })
+    });
+
+    const data = await res.json();
+
+    document.getElementById("answer").innerText = data.answer;
+
+    const videoDiv = document.getElementById("videos");
+    videoDiv.innerHTML = "";
+
+    data.videos.forEach(v => {
+      const id = v.id.videoId;
+
+      videoDiv.innerHTML += `
+        <iframe width="100%" height="150"
+        src="https://www.youtube.com/embed/${id}"
+        frameborder="0" allowfullscreen></iframe>
+      `;
+    });
+  };
+
+  reader.readAsDataURL(file);
+}
