@@ -1,18 +1,26 @@
-const video = document.getElementById("introVideo");
-const intro = document.getElementById("intro");
-const mainUI = document.getElementById("mainUI");
+window.addEventListener("load", () => {
+  const video = document.getElementById("introVideo");
+  const intro = document.getElementById("intro");
+  const mainUI = document.getElementById("mainUI");
 
-// When video ends
-video.addEventListener("ended", () => {
-  // Fade out intro
-  intro.style.opacity = "0";
-  intro.style.transition = "opacity 0.8s ease";
-
+  // Safety: if video fails, skip after 5s
   setTimeout(() => {
-    intro.style.display = "none";
+    showMainUI();
+  }, 5000);
 
-    // Show main UI
-    mainUI.style.opacity = "1";
-    document.body.style.overflow = "auto";
-  }, 800);
+  // When video ends normally
+  video.onended = () => {
+    showMainUI();
+  };
+
+  function showMainUI() {
+    intro.style.opacity = "0";
+    intro.style.transition = "opacity 0.8s ease";
+
+    setTimeout(() => {
+      intro.style.display = "none";
+      mainUI.style.opacity = "1";
+      document.body.style.overflow = "auto";
+    }, 800);
+  }
 });
