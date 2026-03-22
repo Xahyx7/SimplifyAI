@@ -1,100 +1,107 @@
-window.addEventListener("load", () => {
+window.onload = () => {
   const video = document.getElementById("introVideo");
   const intro = document.getElementById("intro");
   const mainUI = document.getElementById("mainUI");
 
-  const card = document.getElementById("card");
-  const boxes = document.querySelectorAll(".glass");
-
-  setTimeout(showUI, 6000);
-  video.onended = showUI;
-
-  function showUI() {
+  video.onended = () => {
     intro.style.opacity = "0";
-
     setTimeout(() => {
       intro.style.display = "none";
       mainUI.style.opacity = "1";
-
-      // CARD ANIMATION
-      setTimeout(() => {
-        card.style.opacity = "1";
-        card.style.transform = "scale(1)";
-        card.style.transition = "0.6s ease";
-      }, 200);
-
-      // OUTPUT ANIMATION
-      boxes.forEach((box, i) => {
-        setTimeout(() => {
-          box.style.opacity = "1";
-          box.style.transform = "translateY(0)";
-          box.style.transition = "0.5s ease";
-        }, 500 + i * 200);
-      });
-
     }, 800);
-  }
-});
-
-
-// 🔥 MAIN SOLVE FUNCTION
-async function solve() {
-  const file = document.getElementById("imageInput").files[0];
-  const prompt = document.getElementById("promptInput").value;
-
-  if (!file && (!prompt || prompt.trim() === "")) {
-    alert("Upload an image OR type your doubt!");
-    return;
-  }
-
-  // TEXT ONLY
-  if (!file) {
-    processRequest(null, prompt);
-    return;
-  }
-
-  // IMAGE MODE
-  const reader = new FileReader();
-
-  reader.onload = function () {
-    const base64 = reader.result.split(",")[1];
-    processRequest(base64, prompt);
   };
+};
 
-  reader.readAsDataURL(file);
+async function sendMessage() {
+  const prompt = document.getElementById("promptInput").value;
+  const file = document.getElementById("imageInput").files[0];
+
+  if (!prompt && !file) {
+    alert("Enter something or upload image");
+    return;
+  }
+
+  addMessage(prompt || "📷 Image uploaded", "user");
+
+  document.getElementById("promptInput").value = "";
+
+  let base64 = null;
+
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = async function () {
+      base64 = reader.result.split(",")[1];
+      await process(base64, prompt);
+    };
+    reader.readAsDataURL(file);
+  } else {
+    await process(null, prompt);
+  }
 }
 
-
-// 🔥 COMMON REQUEST FUNCTION
-async function processRequest(image, prompt) {
-  document.getElementById("answer").innerText = "Thinking...";
-  document.getElementById("videos").innerHTML = "Loading videos...";
+async function process(image, prompt) {
+  addMessage("Thinking...", "ai");
 
   const res = await fetch("/api/solve", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
     },
-    body: JSON.stringify({
-      image: image,
-      prompt: prompt
-    })
+    body: JSON.stringify({ image, prompt })
   });
 
   const data = await res.json();
 
-  document.getElementById("answer").innerText = data.answer;
+  replaceLastMessage(data.answer);
 
-  const videoDiv = document.getElementById("videos");
-  videoDiv.innerHTML = "";
+  showVideos(data.videos);
+}
 
-  data.videos.forEach(v => {
+function addMessage(text, type) {
+  const div = document.createElement("div");
+  div.className = "message " + type;
+  div.innerText = text;
+
+  document.getElementById("chatContainer").appendChild(div);
+
+  scrollToBottom();
+}
+
+function replaceLastMessage(text) {
+  const messages = document.querySelectorAll(".ai");
+  const last = messages[messages.length - 1];
+
+  typeText(last, text);
+}
+
+function typeText(element, text) {
+  element.innerText = "";
+  let i = 0;
+
+  const interval = setInterval(() => {
+    element.innerText += text[i];
+    i++;
+
+    if (i >= text.length) clearInterval(interval);
+  }, 15);
+}
+
+function showVideos(videos) {
+  const panel = document.getElementById("videoPanel");
+  panel.innerHTML = "<h3>🎥 Videos</h3>";
+
+  videos.forEach(v => {
     const id = v.id.videoId;
 
-    videoDiv.innerHTML += `
-      <iframe width="100%" height="150"
-      src="https://www.youtube.com/embed/${id}"
-      frameborder="0" allowfullscreen></iframe>
+    panel.innerHTML += `
+      <iframe width="100%" height="180"
+      src="https://www.youtube.com/embed/${id}">
+      </iframe>
     `;
   });
+}
+
+function scrollToBottom() {
+  const chat = document.getElementById("chatContainer");
+  chat.scrollTop = chat.scrollHeight;
 }
