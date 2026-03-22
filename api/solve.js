@@ -28,24 +28,26 @@ if (!image && (!prompt || prompt.trim() === "")) {
         },
         body: JSON.stringify({
           contents: [
+  {
+    parts: [
+      {
+        text: image
+          ? `Solve the question from the image. User request: ${userInstruction}`
+          : `Answer this question clearly for a student: ${userInstruction}`
+      },
+      ...(image
+        ? [
             {
-              parts: [
-                {
-                  text: `Solve the question from the image. Follow user request: ${userInstruction}`
-                },
-                {
-                  inline_data: {
-                    mime_type: "image/png",
-                    data: image
-                  }
-                }
-              ]
+              inline_data: {
+                mime_type: "image/png",
+                data: image
+              }
             }
           ]
-        })
-      }
-    );
-
+        : [])
+    ]
+  }
+]
     const geminiData = await geminiRes.json();
 
     // 🧠 Extract answer safely
