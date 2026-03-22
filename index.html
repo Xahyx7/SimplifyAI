@@ -14,8 +14,21 @@
   </video>
 </div>
 
+<!-- 🔐 AUTH SCREEN -->
+<div id="auth" class="auth-screen">
+  <div class="auth-box">
+    <h2>SimplifyAI</h2>
+
+    <input id="username" placeholder="Username">
+    <input id="password" type="password" placeholder="Password">
+
+    <button onclick="signup()">Sign Up</button>
+    <button onclick="login()">Login</button>
+  </div>
+</div>
+
 <!-- MAIN -->
-<div id="mainUI">
+<div id="mainUI" style="display:none;">
 
   <div class="app">
 
@@ -23,6 +36,11 @@
     <aside class="sidebar">
       <h2>SimplifyAI</h2>
       <p>AI Tutor</p>
+
+      <button onclick="newChat()">➕ Ask Doubt</button>
+
+      <h4>📜 History</h4>
+      <div id="historyList"></div>
     </aside>
 
     <!-- CHAT AREA -->
@@ -31,30 +49,31 @@
       <!-- CHAT MESSAGES -->
       <div class="chat-container" id="chatContainer"></div>
 
-      <!-- 🔥 PREMIUM CHAT BAR -->
+      <!-- CHAT BAR -->
       <div class="chat-bar">
 
-  <!-- Upload -->
-  <label for="imageInput" class="file-btn">📷</label>
-  <input type="file" id="imageInput">
+        <!-- Upload -->
+        <label for="imageInput" class="file-btn">📷</label>
+        <input type="file" id="imageInput">
 
-  <!-- Image Preview -->
-  <img id="preview" class="preview" />
+        <!-- Preview -->
+        <img id="preview" class="preview" />
 
-  <!-- Input -->
-  <input 
-    type="text" 
-    id="promptInput" 
-    placeholder="Ask anything..."
-  >
+        <!-- Input -->
+        <input 
+          type="text" 
+          id="promptInput" 
+          placeholder="Ask anything..."
+        >
 
-  <!-- Voice -->
-  <button onclick="startVoice()">🎙️</button>
+        <!-- Voice -->
+        <button onclick="startVoice()">🎙️</button>
 
-  <!-- Send -->
-  <button onclick="sendMessage()">Solve</button>
+        <!-- Send -->
+        <button onclick="sendMessage()">Solve</button>
 
-</div>
+      </div>
+
     </main>
 
     <!-- VIDEO PANEL -->
