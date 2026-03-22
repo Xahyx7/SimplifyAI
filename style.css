@@ -303,3 +303,19 @@ button {
     width: 90%;
   }
 }
+
+/* IMAGE PREVIEW */
+.preview {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  display: none;
+  object-fit: cover;
+}
+
+/* VOICE BUTTON */
+.chat-bar button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
