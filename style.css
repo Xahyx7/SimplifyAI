@@ -3,7 +3,6 @@ body {
   font-family: 'Inter', sans-serif;
   background: linear-gradient(135deg, #0B0F1A, #1A0B2E, #2E1065);
   color: white;
-  overflow: hidden;
 }
 
 /* INTRO */
@@ -25,10 +24,38 @@ body {
 /* MAIN */
 #mainUI {
   opacity: 0;
-  transition: opacity 1.2s ease;
+  transition: opacity 1s ease;
 }
 
-/* GLOW */
+/* APP LAYOUT */
+.app {
+  display: grid;
+  grid-template-columns: 220px 1fr 320px;
+  height: 100vh;
+}
+
+/* SIDEBAR */
+.sidebar {
+  padding: 20px;
+  border-right: 1px solid rgba(255,255,255,0.1);
+}
+
+/* MAIN CENTER */
+.main {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* PANEL */
+.panel {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* BACKGROUND GLOW */
 .bg-glow {
   position: fixed;
   width: 600px;
@@ -41,82 +68,25 @@ body {
   z-index: -1;
 }
 
-/* LAYOUT */
-.layout {
-  display: flex;
-  height: 100vh;
-}
-
-/* SIDEBAR */
-.sidebar {
-  width: 220px;
-  padding: 20px;
-  background: rgba(255,255,255,0.05);
-  backdrop-filter: blur(12px);
-  border-right: 1px solid rgba(255,255,255,0.1);
-
-  opacity: 0;
-  transform: translateX(-30px);
-}
-
-/* CENTER */
-.center {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
 /* CARD */
 .card {
-  width: 350px;
+  width: 320px;
   padding: 30px;
-  border-radius: 20px;
+  border-radius: 16px;
   text-align: center;
 
   background: rgba(255,255,255,0.05);
-  backdrop-filter: blur(14px);
+  backdrop-filter: blur(12px);
   border: 1px solid rgba(255,255,255,0.1);
 
   opacity: 0;
-  transform: scale(0.85);
-}
-
-/* RIGHT PANEL */
-.right {
-  width: 300px;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-
-  opacity: 0;
-  transform: translateX(30px);
-}
-
-/* GLASS */
-.glass {
-  padding: 20px;
-  border-radius: 15px;
-
-  background: rgba(255,255,255,0.05);
-  backdrop-filter: blur(14px);
-  border: 1px solid rgba(255,255,255,0.1);
-
-  opacity: 0;
-  transform: scale(0.9) translateY(20px);
-}
-
-/* INPUT */
-.input {
-  margin-top: 10px;
-  width: 100%;
+  transform: scale(0.9);
 }
 
 /* BUTTON */
-.btn {
-  margin-top: 10px;
-  padding: 10px;
+button {
+  margin-top: 15px;
+  padding: 10px 20px;
   border-radius: 10px;
   border: none;
   cursor: pointer;
@@ -125,6 +95,15 @@ body {
   color: white;
 }
 
-.btn:hover {
-  box-shadow: 0 0 20px #7C3AED;
+/* GLASS CARDS */
+.glass {
+  padding: 20px;
+  border-radius: 14px;
+
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.1);
+
+  opacity: 0;
+  transform: translateY(20px);
 }
