@@ -13,6 +13,8 @@ window.onload = () => {
       mainUI.style.opacity = "1";
     }, 800);
   };
+
+  loadHistory();
 };
 
 // =========================
@@ -32,7 +34,6 @@ async function sendMessage() {
   }
 
   addMessage(prompt || "📷 Image uploaded", "user");
-
   promptInput.value = "";
 
   let base64 = null;
@@ -48,7 +49,6 @@ async function sendMessage() {
     await process(null, prompt);
   }
 
-  // 🧹 Clear preview after sending
   preview.style.display = "none";
   preview.src = "";
   imageInput.value = "";
@@ -58,7 +58,7 @@ async function sendMessage() {
 // PROCESS REQUEST
 // =========================
 async function process(image, prompt) {
-  addMessage("Thinking...", "ai");
+  addThinkingMessage();
 
   const res = await fetch("/api/solve", {
     method: "POST",
@@ -72,6 +72,36 @@ async function process(image, prompt) {
 
   replaceLastMessage(data.answer);
   showVideos(data.videos);
+
+  // 📚 SAVE HISTORY
+  await fetch("/api/history", {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({
+      username: localStorage.getItem("user"),
+      action: "save",
+      data: { prompt, answer: data.answer }
+    })
+  });
+
+  loadHistory();
+}
+
+// =========================
+// THINKING ANIMATION
+// =========================
+function addThinkingMessage() {
+  const div = document.createElement("div");
+  div.className = "message ai thinking";
+
+  div.innerHTML = `
+    <span class="dot"></span>
+    <span class="dot"></span>
+    <span class="dot"></span>
+  `;
+
+  document.getElementById("chatContainer").appendChild(div);
+  scrollToBottom();
 }
 
 // =========================
@@ -83,40 +113,33 @@ function addMessage(text, type) {
   div.innerText = text;
 
   document.getElementById("chatContainer").appendChild(div);
-
   scrollToBottom();
 }
 
 // =========================
-// REPLACE LAST MESSAGE (FORMATTED)
+// REPLACE LAST MESSAGE
 // =========================
 function replaceLastMessage(text) {
   const messages = document.querySelectorAll(".ai");
   const last = messages[messages.length - 1];
 
-  // 🧠 FORMAT TEXT
   let formatted = text
-    .replace(/\*\*(.*?)\*\*/g, "<b>$1</b>") // bold
-    .replace(/\n/g, "<br>"); // line breaks
+    .replace(/\*\*(.*?)\*\*/g, "<b>$1</b>")
+    .replace(/\n/g, "<br>");
 
   last.innerHTML = "";
   typeHTML(last, formatted);
 }
 
 // =========================
-// TYPING EFFECT (HTML SAFE)
+// TYPING EFFECT
 // =========================
 function typeHTML(element, html) {
   let i = 0;
-  const speed = 10;
-
   function typing() {
     element.innerHTML = html.slice(0, i++);
-    if (i <= html.length) {
-      setTimeout(typing, speed);
-    }
+    if (i <= html.length) setTimeout(typing, 10);
   }
-
   typing();
 }
 
@@ -128,18 +151,16 @@ function showVideos(videos) {
   panel.innerHTML = "<h3>🎥 Videos</h3>";
 
   videos.forEach(v => {
-    const id = v.id.videoId;
-
     panel.innerHTML += `
       <iframe width="100%" height="180"
-      src="https://www.youtube.com/embed/${id}">
+      src="https://www.youtube.com/embed/${v.id.videoId}">
       </iframe>
     `;
   });
 }
 
 // =========================
-// AUTO SCROLL
+// SCROLL
 // =========================
 function scrollToBottom() {
   const chat = document.getElementById("chatContainer");
@@ -149,11 +170,9 @@ function scrollToBottom() {
 // =========================
 // IMAGE PREVIEW
 // =========================
-const imageInput = document.getElementById("imageInput");
-const preview = document.getElementById("preview");
-
-imageInput.addEventListener("change", () => {
-  const file = imageInput.files[0];
+document.getElementById("imageInput").addEventListener("change", (e) => {
+  const file = e.target.files[0];
+  const preview = document.getElementById("preview");
 
   if (file) {
     preview.src = URL.createObjectURL(file);
@@ -164,25 +183,98 @@ imageInput.addEventListener("change", () => {
 // =========================
 // ENTER TO SEND
 // =========================
-document.getElementById("promptInput")
-  .addEventListener("keypress", function (e) {
-    if (e.key === "Enter") {
-      sendMessage();
-    }
-  });
+document.getElementById("promptInput").addEventListener("keypress", (e) => {
+  if (e.key === "Enter") sendMessage();
+});
 
 // =========================
 // VOICE INPUT
 // =========================
 function startVoice() {
   const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-
   recognition.lang = "en-US";
 
-  recognition.onresult = function (event) {
+  recognition.onresult = (event) => {
     document.getElementById("promptInput").value =
       event.results[0][0].transcript;
   };
 
   recognition.start();
+}
+
+// =========================
+// HISTORY
+// =========================
+async function loadHistory() {
+  const user = localStorage.getItem("user");
+  if (!user) return;
+
+  const res = await fetch("/api/history", {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({ username: user, action: "get" })
+  });
+
+  const data = await res.json();
+  const list = document.getElementById("historyList");
+
+  if (!list) return;
+
+  list.innerHTML = "";
+
+  data.history.forEach(item => {
+    const div = document.createElement("div");
+    div.innerText = item.prompt.slice(0, 25);
+
+    div.onclick = () => {
+      addMessage(item.prompt, "user");
+      addMessage(item.answer, "ai");
+    };
+
+    list.appendChild(div);
+  });
+}
+
+// =========================
+// AUTH
+// =========================
+async function signup() {
+  const username = document.getElementById("username").value;
+  const password = document.getElementById("password").value;
+
+  await fetch("/api/auth", {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({ username, password, type: "signup" })
+  });
+
+  alert("Signed up!");
+}
+
+async function login() {
+  const username = document.getElementById("username").value;
+  const password = document.getElementById("password").value;
+
+  const res = await fetch("/api/auth", {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({ username, password, type: "login" })
+  });
+
+  const data = await res.json();
+
+  if (data.success) {
+    localStorage.setItem("user", username);
+    document.getElementById("auth").style.display = "none";
+    loadHistory();
+  } else {
+    alert("Invalid login");
+  }
+}
+
+// =========================
+// NEW CHAT
+// =========================
+function newChat() {
+  document.getElementById("chatContainer").innerHTML = "";
 }
