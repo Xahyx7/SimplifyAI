@@ -16,14 +16,14 @@ window.addEventListener("load", () => {
       intro.style.display = "none";
       mainUI.style.opacity = "1";
 
-      // CARD
+      // CARD ANIMATION
       setTimeout(() => {
         card.style.opacity = "1";
         card.style.transform = "scale(1)";
         card.style.transition = "0.6s ease";
       }, 200);
 
-      // OUTPUT
+      // OUTPUT ANIMATION
       boxes.forEach((box, i) => {
         setTimeout(() => {
           box.style.opacity = "1";
@@ -35,25 +35,27 @@ window.addEventListener("load", () => {
     }, 800);
   }
 });
+
+
+// 🔥 MAIN SOLVE FUNCTION
 async function solve() {
   const file = document.getElementById("imageInput").files[0];
   const prompt = document.getElementById("promptInput").value;
 
-  // ❌ If nothing given
   if (!file && (!prompt || prompt.trim() === "")) {
     alert("Upload an image OR type your doubt!");
     return;
   }
 
-  const reader = new FileReader();
-
-  // 🧠 TEXT ONLY MODE
+  // TEXT ONLY
   if (!file) {
     processRequest(null, prompt);
     return;
   }
 
-  // 🧠 IMAGE MODE
+  // IMAGE MODE
+  const reader = new FileReader();
+
   reader.onload = function () {
     const base64 = reader.result.split(",")[1];
     processRequest(base64, prompt);
@@ -63,7 +65,7 @@ async function solve() {
 }
 
 
-// 🔥 COMMON FUNCTION
+// 🔥 COMMON REQUEST FUNCTION
 async function processRequest(image, prompt) {
   document.getElementById("answer").innerText = "Thinking...";
   document.getElementById("videos").innerHTML = "Loading videos...";
@@ -95,6 +97,4 @@ async function processRequest(image, prompt) {
       frameborder="0" allowfullscreen></iframe>
     `;
   });
-
-  reader.readAsDataURL(file);
 }
