@@ -2,11 +2,11 @@ body {
   margin: 0;
   background: #0B0F1A;
   color: white;
-  font-family: 'Inter', sans-serif;
+  font-family: Arial, sans-serif;
   overflow: hidden;
 }
 
-/* 🎬 Intro fullscreen */
+/* 🎬 Intro screen */
 #intro {
   position: fixed;
   top: 0;
@@ -20,7 +20,7 @@ body {
   z-index: 9999;
 }
 
-/* Video full cover */
+/* Video styling */
 #intro video {
   width: 100%;
   height: 100%;
