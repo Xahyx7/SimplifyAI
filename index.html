@@ -7,62 +7,53 @@
 </head>
 <body>
 
-  <!-- INTRO -->
-  <div id="intro">
-    <video id="introVideo" autoplay muted playsinline>
-      <source src="/assets/intro.mp4" type="video/mp4">
-    </video>
-  </div>
-
-  <!-- MAIN UI -->
-  <div id="mainUI">
-
-    <div class="bg-glow"></div>
-
-    <div class="layout">
-
-      <!-- SIDEBAR -->
-      <div class="sidebar">
-        <h2>SimplifyAI</h2>
-        <p>AI Study Assistant</p>
-      </div>
-
-      <!-- CENTER -->
-      <div class="center">
-       <div class="card" id="card">
-  <h3>Upload your doubt</h3>
-
-  <input type="file" id="imageInput" class="input" />
-
-  <button class="btn" onclick="solve()">Solve</button>
+<!-- INTRO -->
+<div id="intro">
+  <video id="introVideo" autoplay muted playsinline>
+    <source src="/assets/intro.mp4" type="video/mp4">
+  </video>
 </div>
 
-<!-- OUTPUT -->
-<div class="right">
+<!-- MAIN -->
+<div id="mainUI">
 
-  <div class="glass" id="answer">🧠 Waiting for answer...</div>
+  <div class="bg-glow"></div>
 
-  <div class="glass" id="concept">📌 Concept will appear</div>
+  <div class="app">
 
-  <div class="glass" id="videos">🎥 Videos will appear</div>
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <h2>SimplifyAI</h2>
+      <p>AI Study Assistant</p>
+    </aside>
 
-</div>
+    <!-- MAIN CONTENT -->
+    <main class="main">
 
-      <!-- RIGHT PANEL -->
-      <div class="right">
+      <!-- Upload Card -->
+      <div class="card" id="card">
+        <h3>Upload your doubt</h3>
 
-        <div class="glass">🧠 Answer will appear here</div>
+        <input type="file" id="imageInput" />
 
-        <div class="glass">📌 Concept breakdown</div>
-
-        <div class="glass">🎥 Related videos</div>
-
+        <button onclick="solve()">Solve</button>
       </div>
 
-    </div>
+    </main>
+
+    <!-- OUTPUT PANEL -->
+    <aside class="panel">
+
+      <div class="glass" id="answer">🧠 Waiting for answer...</div>
+      <div class="glass">📌 Concept will appear</div>
+      <div class="glass" id="videos">🎥 Videos will appear</div>
+
+    </aside>
 
   </div>
 
-  <script src="script.js"></script>
+</div>
+
+<script src="script.js"></script>
 </body>
 </html>
