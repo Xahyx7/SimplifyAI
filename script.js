@@ -1,5 +1,10 @@
 // =========================
-// INTRO LOADER (FINAL FIX)
+// GLOBAL CHAT STATE
+// =========================
+let currentChatId = null;
+
+// =========================
+// INTRO LOADER
 // =========================
 window.onload = () => {
   const video = document.getElementById("introVideo");
@@ -20,9 +25,19 @@ window.onload = () => {
 };
 
 // =========================
+// NEW CHAT
+// =========================
+function newChat() {
+  currentChatId = Date.now().toString();
+  document.getElementById("chatContainer").innerHTML = "";
+}
+
+// =========================
 // SEND MESSAGE
 // =========================
 async function sendMessage() {
+  if (!currentChatId) newChat();
+
   const promptInput = document.getElementById("promptInput");
   const imageInput = document.getElementById("imageInput");
   const preview = document.getElementById("preview");
@@ -55,7 +70,7 @@ async function sendMessage() {
 }
 
 // =========================
-// PROCESS REQUEST (SAFE)
+// PROCESS REQUEST (UPDATED)
 // =========================
 async function process(image, prompt) {
   addThinkingMessage();
@@ -82,14 +97,18 @@ async function process(image, prompt) {
     replaceLastMessage(data.answer || "No response");
     showVideos(data.videos || []);
 
-    // SAVE HISTORY
+    // ✅ SAVE TO CHAT SESSION
     await fetch("/api/history", {
       method: "POST",
       headers: {"Content-Type":"application/json"},
       body: JSON.stringify({
         username: localStorage.getItem("user"),
-        action: "save",
-        data: { prompt, answer: data.answer }
+        action: "saveMessage",
+        chatId: currentChatId,
+        message: {
+          prompt,
+          answer: data.answer
+        }
       })
     });
 
@@ -98,6 +117,33 @@ async function process(image, prompt) {
   } catch (err) {
     replaceLastMessage("⚠️ Network error. Try again.");
   }
+}
+
+// =========================
+// LOAD FULL CHAT
+// =========================
+async function loadChat(chatId) {
+  currentChatId = chatId;
+
+  const res = await fetch("/api/history", {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({
+      username: localStorage.getItem("user"),
+      action: "getChat",
+      chatId
+    })
+  });
+
+  const data = await res.json();
+
+  const chat = document.getElementById("chatContainer");
+  chat.innerHTML = "";
+
+  data.messages.forEach(m => {
+    addMessage(m.prompt, "user");
+    addMessage(m.answer, "ai");
+  });
 }
 
 // =========================
@@ -216,7 +262,7 @@ function startVoice() {
 }
 
 // =========================
-// HISTORY
+// HISTORY (UPDATED)
 // =========================
 async function loadHistory() {
   const user = localStorage.getItem("user");
@@ -232,18 +278,15 @@ async function loadHistory() {
     const data = await res.json();
     const list = document.getElementById("historyList");
 
-    if (!list) return;
-
     list.innerHTML = "";
 
-    data.history.forEach(item => {
+    data.history.forEach(chat => {
       const div = document.createElement("div");
-      div.innerText = item.prompt.slice(0, 25);
 
-      div.onclick = () => {
-        addMessage(item.prompt, "user");
-        addMessage(item.answer, "ai");
-      };
+      const firstMsg = chat.messages?.[0]?.prompt || "New Chat";
+      div.innerText = firstMsg.slice(0, 25);
+
+      div.onclick = () => loadChat(chat.chatId);
 
       list.appendChild(div);
     });
@@ -254,7 +297,7 @@ async function loadHistory() {
 }
 
 // =========================
-// AUTH (FIXED UI BUG)
+// AUTH
 // =========================
 async function signup() {
   const username = document.getElementById("username").value;
@@ -312,15 +355,9 @@ async function login() {
       mainUI.style.opacity = "1";
     }, 50);
 
+    newChat(); // start fresh chat
     loadHistory();
   } else {
     alert(data.error || "Invalid login");
   }
-}
-
-// =========================
-// NEW CHAT
-// =========================
-function newChat() {
-  document.getElementById("chatContainer").innerHTML = "";
 }
