@@ -6,8 +6,8 @@ window.addEventListener("load", () => {
   const card = document.getElementById("card");
   const boxes = document.querySelectorAll(".glass");
 
-  // fallback
-  setTimeout(showUI, 5000);
+  // fallback if video fails
+  setTimeout(showUI, 6000);
 
   video.onended = showUI;
 
@@ -18,22 +18,24 @@ window.addEventListener("load", () => {
       intro.style.display = "none";
       mainUI.style.opacity = "1";
 
-      // animate card
-      card.style.opacity = "1";
-      card.style.transform = "scale(1)";
-      card.style.transition = "0.6s ease";
+      // 🎯 MAIN CARD POP (smooth)
+      setTimeout(() => {
+        card.style.opacity = "1";
+        card.style.transform = "scale(1) translateY(0)";
+        card.style.transition = "all 0.8s cubic-bezier(0.22, 1, 0.36, 1)";
+      }, 200);
 
-      // stagger boxes
+      // 🎯 STAGGERED BOX POP
       boxes.forEach((box, i) => {
         setTimeout(() => {
           box.style.opacity = "1";
-          box.style.transform = "translateY(0)";
-          box.style.transition = "0.5s ease";
-        }, 300 + i * 200);
+          box.style.transform = "scale(1) translateY(0)";
+          box.style.transition = "all 0.7s cubic-bezier(0.22, 1, 0.36, 1)";
+        }, 600 + i * 250);
       });
 
       document.body.style.overflow = "auto";
 
-    }, 800);
+    }, 1000); // smoother delay
   }
 });
