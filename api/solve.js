@@ -8,9 +8,10 @@ export default async function handler(req, res) {
     // 📥 Get data from frontend
     const { image, prompt } = req.body;
 
-    if (!image) {
-      return res.status(400).json({ error: "No image provided" });
-    }
+   // Allow either image OR text
+if (!image && (!prompt || prompt.trim() === "")) {
+  return res.status(400).json({ error: "No input provided" });
+}
 
     // 🧠 Final AI instruction (dynamic based on user prompt)
     const userInstruction = prompt && prompt.trim() !== ""
