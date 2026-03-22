@@ -1,35 +1,41 @@
 import clientPromise from "./db";
 
 export default async function handler(req, res) {
-  const { username, password, type } = req.body;
+  try {
+    const { username, password, type } = req.body;
 
-  const client = await clientPromise;
-  const db = client.db("simplifyai");
-  const users = db.collection("users");
+    const client = await clientPromise;
+    const db = client.db("simplifyai");
+    const users = db.collection("users");
 
-  if (type === "signup") {
-    const exists = await users.findOne({ username });
+    if (type === "signup") {
+      const exists = await users.findOne({ username });
 
-    if (exists) {
-      return res.json({ error: "User already exists" });
+      if (exists) {
+        return res.json({ error: "User exists" });
+      }
+
+      await users.insertOne({
+        username,
+        password,
+        history: []
+      });
+
+      return res.json({ success: true });
     }
 
-    await users.insertOne({
-      username,
-      password,
-      history: []
-    });
+    if (type === "login") {
+      const user = await users.findOne({ username, password });
 
-    return res.json({ success: true });
-  }
+      if (!user) {
+        return res.json({ error: "Invalid credentials" });
+      }
 
-  if (type === "login") {
-    const user = await users.findOne({ username, password });
-
-    if (!user) {
-      return res.json({ error: "Invalid credentials" });
+      return res.json({ success: true });
     }
 
-    return res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "Server error" });
   }
 }
