@@ -28,19 +28,28 @@
     </aside>
 
     <!-- MAIN CONTENT -->
-    <main class="main">
+   <main class="main">
 
-      <!-- Upload Card -->
-      <div class="card" id="card">
-        <h3>Upload your doubt</h3>
+  <!-- Upload Card -->
+  <div class="card" id="card">
+    <h3>Upload your doubt</h3>
 
-        <input type="file" id="imageInput" />
+    <input type="file" id="imageInput" />
 
-        <button onclick="solve()">Solve</button>
-      </div>
+    <button onclick="solve()">Solve</button>
+  </div>
 
-    </main>
+  <!-- 💬 CHAT INPUT BAR -->
+  <div class="chat-bar">
+    <input 
+      type="text" 
+      id="promptInput" 
+      placeholder="Explain what you want... (e.g. only steps, hint, easy explanation)"
+    />
+    <button onclick="solve()">➤</button>
+  </div>
 
+</main>
     <!-- OUTPUT PANEL -->
     <aside class="panel">
 
