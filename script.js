@@ -105,3 +105,14 @@ function scrollToBottom() {
   const chat = document.getElementById("chatContainer");
   chat.scrollTop = chat.scrollHeight;
 }
+const imageInput = document.getElementById("imageInput");
+const preview = document.getElementById("preview");
+
+imageInput.addEventListener("change", () => {
+  const file = imageInput.files[0];
+
+  if (file) {
+    preview.src = URL.createObjectURL(file);
+    preview.style.display = "block";
+  }
+});
