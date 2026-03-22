@@ -29,12 +29,24 @@
 
       <!-- CENTER -->
       <div class="center">
-        <div class="card" id="card">
-          <h3>Upload your doubt</h3>
-          <input type="file" class="input" />
-          <button class="btn">Solve</button>
-        </div>
-      </div>
+       <div class="card" id="card">
+  <h3>Upload your doubt</h3>
+
+  <input type="file" id="imageInput" class="input" />
+
+  <button class="btn" onclick="solve()">Solve</button>
+</div>
+
+<!-- OUTPUT -->
+<div class="right">
+
+  <div class="glass" id="answer">🧠 Waiting for answer...</div>
+
+  <div class="glass" id="concept">📌 Concept will appear</div>
+
+  <div class="glass" id="videos">🎥 Videos will appear</div>
+
+</div>
 
       <!-- RIGHT PANEL -->
       <div class="right">
