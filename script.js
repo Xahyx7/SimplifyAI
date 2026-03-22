@@ -1,5 +1,5 @@
 // =========================
-// INTRO LOADER (FIXED)
+// INTRO LOADER (FINAL FIX)
 // =========================
 window.onload = () => {
   const video = document.getElementById("introVideo");
@@ -15,10 +15,7 @@ window.onload = () => {
     }, 800);
   }
 
-  // When video ends
   video.onended = showAuth;
-
-  // Fallback (if video fails)
   setTimeout(showAuth, 5000);
 };
 
@@ -41,12 +38,10 @@ async function sendMessage() {
   addMessage(prompt || "📷 Image uploaded", "user");
   promptInput.value = "";
 
-  let base64 = null;
-
   if (file) {
     const reader = new FileReader();
     reader.onload = async function () {
-      base64 = reader.result.split(",")[1];
+      const base64 = reader.result.split(",")[1];
       await process(base64, prompt);
     };
     reader.readAsDataURL(file);
@@ -60,36 +55,49 @@ async function sendMessage() {
 }
 
 // =========================
-// PROCESS REQUEST
+// PROCESS REQUEST (SAFE)
 // =========================
 async function process(image, prompt) {
   addThinkingMessage();
 
-  const res = await fetch("/api/solve", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ image, prompt })
-  });
+  try {
+    const res = await fetch("/api/solve", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ image, prompt })
+    });
 
-  const data = await res.json();
+    const text = await res.text();
 
-  replaceLastMessage(data.answer);
-  showVideos(data.videos);
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch {
+      replaceLastMessage("⚠️ Server error:\n" + text);
+      return;
+    }
 
-  // SAVE HISTORY
-  await fetch("/api/history", {
-    method: "POST",
-    headers: {"Content-Type":"application/json"},
-    body: JSON.stringify({
-      username: localStorage.getItem("user"),
-      action: "save",
-      data: { prompt, answer: data.answer }
-    })
-  });
+    replaceLastMessage(data.answer || "No response");
+    showVideos(data.videos || []);
 
-  loadHistory();
+    // SAVE HISTORY
+    await fetch("/api/history", {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({
+        username: localStorage.getItem("user"),
+        action: "save",
+        data: { prompt, answer: data.answer }
+      })
+    });
+
+    loadHistory();
+
+  } catch (err) {
+    replaceLastMessage("⚠️ Network error. Try again.");
+  }
 }
 
 // =========================
@@ -214,46 +222,62 @@ async function loadHistory() {
   const user = localStorage.getItem("user");
   if (!user) return;
 
-  const res = await fetch("/api/history", {
-    method: "POST",
-    headers: {"Content-Type":"application/json"},
-    body: JSON.stringify({ username: user, action: "get" })
-  });
+  try {
+    const res = await fetch("/api/history", {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({ username: user, action: "get" })
+    });
 
-  const data = await res.json();
-  const list = document.getElementById("historyList");
+    const data = await res.json();
+    const list = document.getElementById("historyList");
 
-  if (!list) return;
+    if (!list) return;
 
-  list.innerHTML = "";
+    list.innerHTML = "";
 
-  data.history.forEach(item => {
-    const div = document.createElement("div");
-    div.innerText = item.prompt.slice(0, 25);
+    data.history.forEach(item => {
+      const div = document.createElement("div");
+      div.innerText = item.prompt.slice(0, 25);
 
-    div.onclick = () => {
-      addMessage(item.prompt, "user");
-      addMessage(item.answer, "ai");
-    };
+      div.onclick = () => {
+        addMessage(item.prompt, "user");
+        addMessage(item.answer, "ai");
+      };
 
-    list.appendChild(div);
-  });
+      list.appendChild(div);
+    });
+
+  } catch {
+    console.log("History load failed");
+  }
 }
 
 // =========================
-// AUTH
+// AUTH (SAFE)
 // =========================
 async function signup() {
   const username = document.getElementById("username").value;
   const password = document.getElementById("password").value;
 
-  await fetch("/api/auth", {
+  const res = await fetch("/api/auth", {
     method: "POST",
     headers: {"Content-Type":"application/json"},
     body: JSON.stringify({ username, password, type: "signup" })
   });
 
-  alert("Signed up!");
+  const text = await res.text();
+  let data;
+
+  try {
+    data = JSON.parse(text);
+  } catch {
+    alert("Server error: " + text);
+    return;
+  }
+
+  if (data.success) alert("Signed up!");
+  else alert(data.error || "Signup failed");
 }
 
 async function login() {
@@ -266,7 +290,15 @@ async function login() {
     body: JSON.stringify({ username, password, type: "login" })
   });
 
-  const data = await res.json();
+  const text = await res.text();
+  let data;
+
+  try {
+    data = JSON.parse(text);
+  } catch {
+    alert("Server error: " + text);
+    return;
+  }
 
   if (data.success) {
     localStorage.setItem("user", username);
@@ -276,7 +308,7 @@ async function login() {
 
     loadHistory();
   } else {
-    alert("Invalid login");
+    alert(data.error || "Invalid login");
   }
 }
 
