@@ -1,12 +1,23 @@
 export default async function handler(req, res) {
+  // ❌ Only allow POST
   if (req.method !== "POST") {
-    return res.status(405).json({ error: "Only POST allowed" });
+    return res.status(405).json({ error: "Only POST requests allowed" });
   }
 
   try {
-    const { image } = req.body;
+    // 📥 Get data from frontend
+    const { image, prompt } = req.body;
 
-    // 🧠 GEMINI CALL
+    if (!image) {
+      return res.status(400).json({ error: "No image provided" });
+    }
+
+    // 🧠 Final AI instruction (dynamic based on user prompt)
+    const userInstruction = prompt && prompt.trim() !== ""
+      ? prompt
+      : "Explain step by step in simple way for a student.";
+
+    // 🤖 GEMINI API CALL
     const geminiRes = await fetch(
       `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
       {
@@ -18,7 +29,9 @@ export default async function handler(req, res) {
           contents: [
             {
               parts: [
-                { text: "Solve this question step by step and explain simply." },
+                {
+                  text: `Solve the question from the image. Follow user request: ${userInstruction}`
+                },
                 {
                   inline_data: {
                     mime_type: "image/png",
@@ -34,25 +47,32 @@ export default async function handler(req, res) {
 
     const geminiData = await geminiRes.json();
 
+    // 🧠 Extract answer safely
     const answer =
-      geminiData.candidates?.[0]?.content?.parts?.[0]?.text ||
-      "No answer found";
+      geminiData?.candidates?.[0]?.content?.parts?.[0]?.text ||
+      "No answer generated.";
 
-    // 🎥 YOUTUBE SEARCH
+    // 🎥 YOUTUBE SEARCH (based on answer keywords)
     const ytRes = await fetch(
       `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(
         answer.slice(0, 80)
-      )}&key=${process.env.YOUTUBE_API_KEY}&maxResults=2`
+      )}&key=${process.env.YOUTUBE_API_KEY}&maxResults=2&type=video`
     );
 
     const ytData = await ytRes.json();
 
+    // 📤 SEND RESPONSE
     res.status(200).json({
       answer,
       videos: ytData.items || []
     });
 
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+  } catch (error) {
+    console.error("Error:", error);
+
+    res.status(500).json({
+      error: "Something went wrong",
+      details: error.message
+    });
   }
 }
