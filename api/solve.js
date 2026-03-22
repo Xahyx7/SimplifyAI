@@ -1,24 +1,62 @@
 export default async function handler(req, res) {
-  // ❌ Only allow POST
   if (req.method !== "POST") {
-    return res.status(405).json({ error: "Only POST requests allowed" });
+    return res.status(405).json({ error: "Only POST allowed" });
   }
 
   try {
-    // 📥 Get data from frontend
     const { image, prompt } = req.body;
 
-   // Allow either image OR text
-if (!image && (!prompt || prompt.trim() === "")) {
-  return res.status(400).json({ error: "No input provided" });
-}
+    if (!image && (!prompt || prompt.trim() === "")) {
+      return res.status(400).json({ error: "No input provided" });
+    }
 
-    // 🧠 Final AI instruction (dynamic based on user prompt)
     const userInstruction = prompt && prompt.trim() !== ""
       ? prompt
-      : "Explain step by step in simple way for a student.";
+      : "Solve step by step clearly.";
 
-    // 🤖 GEMINI API CALL
+    // 🧠 SMART SYSTEM PROMPT
+    const systemPrompt = `
+You are an intelligent AI tutor for students.
+
+Your job is to first understand the student's intent and then respond accordingly.
+
+### Step 1: Identify what the student wants:
+- Solve the question
+- Check if their answer is correct
+- Find mistakes
+- Give only hint
+- Explain concept
+- Give short answer
+
+### Step 2: Respond accordingly:
+
+RULES:
+- If student asks to CHECK → verify answer + explain mistakes
+- If student asks for HINT → do NOT give full solution
+- If student asks to SOLVE → give step-by-step solution
+- If student asks CONCEPT → explain simply
+- Always be clear, structured, and student-friendly
+
+### Step 3: Format response:
+
+Use this format when possible:
+
+🧠 Answer:
+(Direct answer)
+
+🪜 Steps:
+(Numbered steps if solving)
+
+⚠️ Mistake:
+(If any mistake found)
+
+💡 Tip:
+(Small helpful tip)
+
+Keep language simple and easy to understand.
+`;
+
+    // 🤖 GEMINI CALL
     const geminiRes = await fetch(
       `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
       {
@@ -28,66 +66,53 @@ if (!image && (!prompt || prompt.trim() === "")) {
         },
         body: JSON.stringify({
           contents: [
-  {
-    parts: [
-      {
-       text: image
-  ? `You are a helpful study assistant.
-
-A student has uploaded an image of a question or their solution.
-
-First understand what the student is asking:
-- If they want a solution → solve step by step
-- If they want verification → check their answer and tell if correct
-- If they want mistake analysis → find errors and explain
-- If they want hint → give hint only
-- If they want simple explanation → explain clearly
-
-User request: ${userInstruction}
-
-Respond accordingly in a clear and helpful way.`
-  : `You are a helpful study assistant.
-
-Answer this question clearly for a student:
-${userInstruction}`
-      },
-      ...(image
-        ? [
             {
-              inline_data: {
-                mime_type: "image/png",
-                data: image
-              }
+              parts: [
+                { text: systemPrompt },
+                {
+                  text: image
+                    ? `Student uploaded an image. Request: ${userInstruction}`
+                    : `Student question: ${userInstruction}`
+                },
+                ...(image
+                  ? [{
+                      inline_data: {
+                        mime_type: "image/png",
+                        data: image
+                      }
+                    }]
+                  : [])
+              ]
             }
           ]
-        : [])
-    ]
-  }
-]
+        })
+      }
+    );
+
     const geminiData = await geminiRes.json();
 
-    // 🧠 Extract answer safely
     const answer =
       geminiData?.candidates?.[0]?.content?.parts?.[0]?.text ||
       "No answer generated.";
 
-    // 🎥 YOUTUBE SEARCH (based on answer keywords)
+    // 🎥 SMART VIDEO SEARCH (based on intent)
+    const searchQuery = userInstruction.slice(0, 60);
+
     const ytRes = await fetch(
       `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(
-        answer.slice(0, 80)
+        searchQuery
       )}&key=${process.env.YOUTUBE_API_KEY}&maxResults=2&type=video`
     );
 
     const ytData = await ytRes.json();
 
-    // 📤 SEND RESPONSE
     res.status(200).json({
       answer,
       videos: ytData.items || []
     });
 
   } catch (error) {
-    console.error("Error:", error);
+    console.error(error);
 
     res.status(500).json({
       error: "Something went wrong",
