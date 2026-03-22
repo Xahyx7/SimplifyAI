@@ -150,3 +150,20 @@ button {
   background: linear-gradient(135deg, #7C3AED, #22D3EE);
   color: white;
 }
+/* remove if not good*/
+.chat-bar button {
+  padding: 10px 20px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+
+  background: linear-gradient(135deg, #7C3AED, #22D3EE);
+  color: white;
+  font-weight: bold;
+
+  transition: 0.3s;
+}
+
+.chat-bar button:hover {
+  box-shadow: 0 0 20px #7C3AED;
+}
