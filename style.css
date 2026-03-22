@@ -1,0 +1,35 @@
+body {
+  margin: 0;
+  background: #0B0F1A;
+  color: white;
+  font-family: 'Inter', sans-serif;
+  overflow: hidden;
+}
+
+/* 🎬 Intro fullscreen */
+#intro {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #0B0F1A;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+/* Video full cover */
+#intro video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* 🌐 Main UI hidden initially */
+#mainUI {
+  opacity: 0;
+  transition: opacity 1s ease;
+  padding: 40px;
+}
