@@ -1,3 +1,6 @@
+// =========================
+// INTRO LOADER
+// =========================
 window.onload = () => {
   const video = document.getElementById("introVideo");
   const intro = document.getElementById("intro");
@@ -12,9 +15,16 @@ window.onload = () => {
   };
 };
 
+// =========================
+// SEND MESSAGE
+// =========================
 async function sendMessage() {
-  const prompt = document.getElementById("promptInput").value;
-  const file = document.getElementById("imageInput").files[0];
+  const promptInput = document.getElementById("promptInput");
+  const imageInput = document.getElementById("imageInput");
+  const preview = document.getElementById("preview");
+
+  const prompt = promptInput.value;
+  const file = imageInput.files[0];
 
   if (!prompt && !file) {
     alert("Enter something or upload image");
@@ -23,7 +33,7 @@ async function sendMessage() {
 
   addMessage(prompt || "📷 Image uploaded", "user");
 
-  document.getElementById("promptInput").value = "";
+  promptInput.value = "";
 
   let base64 = null;
 
@@ -37,8 +47,16 @@ async function sendMessage() {
   } else {
     await process(null, prompt);
   }
+
+  // 🧹 Clear preview after sending
+  preview.style.display = "none";
+  preview.src = "";
+  imageInput.value = "";
 }
 
+// =========================
+// PROCESS REQUEST
+// =========================
 async function process(image, prompt) {
   addMessage("Thinking...", "ai");
 
@@ -53,10 +71,12 @@ async function process(image, prompt) {
   const data = await res.json();
 
   replaceLastMessage(data.answer);
-
   showVideos(data.videos);
 }
 
+// =========================
+// ADD MESSAGE
+// =========================
 function addMessage(text, type) {
   const div = document.createElement("div");
   div.className = "message " + type;
@@ -67,25 +87,42 @@ function addMessage(text, type) {
   scrollToBottom();
 }
 
+// =========================
+// REPLACE LAST MESSAGE (FORMATTED)
+// =========================
 function replaceLastMessage(text) {
   const messages = document.querySelectorAll(".ai");
   const last = messages[messages.length - 1];
 
-  typeText(last, text);
+  // 🧠 FORMAT TEXT
+  let formatted = text
+    .replace(/\*\*(.*?)\*\*/g, "<b>$1</b>") // bold
+    .replace(/\n/g, "<br>"); // line breaks
+
+  last.innerHTML = "";
+  typeHTML(last, formatted);
 }
 
-function typeText(element, text) {
-  element.innerText = "";
+// =========================
+// TYPING EFFECT (HTML SAFE)
+// =========================
+function typeHTML(element, html) {
   let i = 0;
+  const speed = 10;
 
-  const interval = setInterval(() => {
-    element.innerText += text[i];
-    i++;
+  function typing() {
+    element.innerHTML = html.slice(0, i++);
+    if (i <= html.length) {
+      setTimeout(typing, speed);
+    }
+  }
 
-    if (i >= text.length) clearInterval(interval);
-  }, 15);
+  typing();
 }
 
+// =========================
+// SHOW VIDEOS
+// =========================
 function showVideos(videos) {
   const panel = document.getElementById("videoPanel");
   panel.innerHTML = "<h3>🎥 Videos</h3>";
@@ -101,10 +138,17 @@ function showVideos(videos) {
   });
 }
 
+// =========================
+// AUTO SCROLL
+// =========================
 function scrollToBottom() {
   const chat = document.getElementById("chatContainer");
   chat.scrollTop = chat.scrollHeight;
 }
+
+// =========================
+// IMAGE PREVIEW
+// =========================
 const imageInput = document.getElementById("imageInput");
 const preview = document.getElementById("preview");
 
@@ -116,3 +160,29 @@ imageInput.addEventListener("change", () => {
     preview.style.display = "block";
   }
 });
+
+// =========================
+// ENTER TO SEND
+// =========================
+document.getElementById("promptInput")
+  .addEventListener("keypress", function (e) {
+    if (e.key === "Enter") {
+      sendMessage();
+    }
+  });
+
+// =========================
+// VOICE INPUT
+// =========================
+function startVoice() {
+  const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+
+  recognition.lang = "en-US";
+
+  recognition.onresult = function (event) {
+    document.getElementById("promptInput").value =
+      event.results[0][0].transcript;
+  };
+
+  recognition.start();
+}
