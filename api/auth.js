@@ -1,19 +1,34 @@
-let users = [];
+import clientPromise from "./db";
 
-export default function handler(req, res) {
+export default async function handler(req, res) {
   const { username, password, type } = req.body;
 
-  if (type === "signup") {
-    if (users.find(u => u.username === username))
-      return res.json({ error: "User exists" });
+  const client = await clientPromise;
+  const db = client.db("simplifyai");
+  const users = db.collection("users");
 
-    users.push({ username, password });
+  if (type === "signup") {
+    const exists = await users.findOne({ username });
+
+    if (exists) {
+      return res.json({ error: "User already exists" });
+    }
+
+    await users.insertOne({
+      username,
+      password,
+      history: []
+    });
+
     return res.json({ success: true });
   }
 
   if (type === "login") {
-    const user = users.find(u => u.username === username && u.password === password);
-    if (!user) return res.json({ error: "Invalid" });
+    const user = await users.findOne({ username, password });
+
+    if (!user) {
+      return res.json({ error: "Invalid credentials" });
+    }
 
     return res.json({ success: true });
   }
