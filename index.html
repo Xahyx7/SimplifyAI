@@ -28,12 +28,26 @@
     <!-- CHAT AREA -->
     <main class="chat">
 
-     <div class="chat-container" id="chatContainer"></div>
+      <!-- CHAT MESSAGES -->
+      <div class="chat-container" id="chatContainer"></div>
 
+      <!-- 🔥 PREMIUM CHAT BAR -->
       <div class="chat-bar">
+
+        <!-- Custom Upload Button -->
+        <label for="imageInput" class="file-btn">📷 Upload</label>
         <input type="file" id="imageInput">
-        <input type="text" id="promptInput" placeholder="Ask anything...">
-        <button onclick="sendMessage()">Send</button>
+
+        <!-- Text Input -->
+        <input 
+          type="text" 
+          id="promptInput" 
+          placeholder="Ask anything... (e.g. solve, check, explain, hint)"
+        >
+
+        <!-- Send Button -->
+        <button onclick="sendMessage()">Solve</button>
+
       </div>
 
     </main>
