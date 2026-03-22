@@ -254,7 +254,7 @@ async function loadHistory() {
 }
 
 // =========================
-// AUTH (SAFE)
+// AUTH (FIXED UI BUG)
 // =========================
 async function signup() {
   const username = document.getElementById("username").value;
@@ -303,8 +303,14 @@ async function login() {
   if (data.success) {
     localStorage.setItem("user", username);
 
+    const mainUI = document.getElementById("mainUI");
+
     document.getElementById("auth").style.display = "none";
-    document.getElementById("mainUI").style.display = "block";
+
+    mainUI.style.display = "block";
+    setTimeout(() => {
+      mainUI.style.opacity = "1";
+    }, 50);
 
     loadHistory();
   } else {
