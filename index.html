@@ -41,6 +41,9 @@
 
       <h4>📜 History</h4>
       <div id="historyList"></div>
+
+      <!-- ✅ Logout button added -->
+      <button onclick="logout()" class="logout-btn">🚪 Logout</button>
     </aside>
 
     <!-- CHAT AREA -->
@@ -54,7 +57,7 @@
 
         <!-- Upload -->
         <label for="imageInput" class="file-btn">📷</label>
-        <input type="file" id="imageInput">
+        <input type="file" id="imageInput" accept="image/*">
 
         <!-- Preview -->
         <img id="preview" class="preview" />
@@ -69,8 +72,8 @@
         <!-- Voice -->
         <button onclick="startVoice()">🎙️</button>
 
-        <!-- Send -->
-        <button onclick="sendMessage()">Solve</button>
+        <!-- Send — ✅ id added so JS can disable it -->
+        <button id="sendBtn" onclick="sendMessage()">Solve</button>
 
       </div>
 
